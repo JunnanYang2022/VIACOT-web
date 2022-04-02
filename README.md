@@ -1,4 +1,4 @@
-# lineage
+# VIACOT Web configuration and code
 
 ## Project setup
 ```
