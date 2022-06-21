@@ -1,5 +1,5 @@
 export const Yan = {
-    labelWidth:'120px',
+    labelWidth: '120px',
 
     copyRight: 'Copyright © 中山大学 Yang Lab 2019-2022',
     logoText: '中山大学-系统与进化基因组学实验室',
@@ -28,6 +28,7 @@ export const Yan = {
     calculate2: '系统发育独立差',
     horizontal: '横向',
     vertical: '竖向',
+    radial: '径向布局',
     empty: '无数据',
     lineageTree: '谱系树',
     direction: '方向',
@@ -38,10 +39,12 @@ export const Yan = {
     notice2: '请选择基因1和2！',
     notice3: '请选择树1和树2！',
     confirm: '确定',
-    correlation:'皮尔逊相关系数',
-    correlationOriginal:'原始表达',
-    correlationPhylogenetic:'系统发育独立差',
-    correlationTip:'基因的表达变异太少。相关性可能无法提供准确信息。',
+    correlation: '皮尔逊相关系数',
+    correlationOriginal: '原始表达',
+    correlationPhylogenetic: '系统发育独立差',
+    correlationTip: '基因的表达变异太少。相关性可能无法提供准确信息。',
+    cellType: '细胞类型',
+    color: '颜色',
 
     download: '下载',
     contactUs: '联系我们',

@@ -2,7 +2,7 @@
   <div style="width: 100%;">
     <el-card v-show="childForm.activeTab === '1' ">
       <el-button icon="el-icon-download" @click="saveImg(1)"
-                 style="float: right;position: relative;right: 20px;z-index: 999;">下载为图片
+                 style="float: right;position: relative;right: 20px;z-index: 999;">{{ $t('Yan.downloadIng') }}
       </el-button>
       <div ref="lineageChart2" id="lineageChart2" style="width: 100%;height: 600px;margin:0 auto"></div>
     </el-card>
@@ -10,7 +10,7 @@
     <el-card v-show="childForm.activeTab === '2' ">
       <el-button icon="el-icon-download" @click="saveImg(2)"
                  style="float: right;position: relative;right: 20px;z-index: 999;"
-      >下载为图片
+      >{{ $t('Yan.downloadIng') }}
       </el-button>
       <div style="width:100%;display: flex;justify-content: space-between;">
         <div ref="chart-gene-left2" id="chartByGeneLeft2" style="width: 50%;height: 600px;margin:0 auto"></div>

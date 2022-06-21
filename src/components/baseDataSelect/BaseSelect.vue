@@ -105,9 +105,6 @@ export default {
       this.selectedValue = "";
       getBaseData(this.url, this.paramData).then(res => {
         this.selectList = res.data;
-        if (this.modelFilter) {
-          this.selectList = this.selectList.filter(item => item.value !== 'P.Marina' && item.value !== 'C.elegans')
-        }
         if (this.defaultValue) {
           if (this.selectList.length > 0) {
             this.selectedValue = this.selectList[0].value

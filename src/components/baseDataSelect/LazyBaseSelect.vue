@@ -1,69 +1,172 @@
 <template>
   <el-select
-      v-model="value"
-      placeholder="请选择"
-      filterable
-      v-el-select-loadmore="loadmore"
+      :clearable="clearable"
+      :filterable=true
+      v-model="selectedValue"
+      @change="change"
+      :placeholder="placeholder"
+      :filter-method="filterOptions"
   >
     <el-option
-        v-for="item in options"
-        :key="item.id"
-        :label="item.label"
-        :value="item.id">
-    </el-option>
+        v-for="(item,index) in selectList"
+        :key="item.value + index"
+        :label="item.desc"
+        :value="item.value"
+    ></el-option>
   </el-select>
 </template>
 
 <script>
+import {getBaseData} from '@/api/baseData/baseDataInit'
+
 export default {
-  directives: {
-    'el-select-loadmore': {
-      bind(el, binding) {
-        // 获取element-ui定义好的scroll盒子
-        const SELECTWRAP_DOM = el.querySelector('.el-select-dropdown .el-select-dropdown__wrap');
-        SELECTWRAP_DOM.addEventListener('scroll', function () {
-          /**
-           * scrollHeight 获取元素内容高度(只读)
-           * scrollTop 获取或者设置元素的偏移值,常用于, 计算滚动条的位置, 当一个元素的容器没有产生垂直方向的滚动条, 那它的scrollTop的值默认为0.
-           * clientHeight 读取元素的可见高度(只读)
-           * 如果元素滚动到底, 下面等式返回true, 没有则返回false:
-           * ele.scrollHeight - ele.scrollTop === ele.clientHeight;
-           */
-          const condition = this.scrollHeight - this.scrollTop <= this.clientHeight;
-          if (condition) {
-            binding.value();
+  name: 'BaseSelect',
+  data() {
+    return {
+      allData: [],
+      selectedValue: "",
+      selectList: []
+    }
+  },
+  props: {
+    value: { //和父组件想关联
+      type: String,
+      default: null
+    },
+    dynamicValue: { //传入的选择的值
+      type: String,
+      default: null
+    },
+    url: {  //查询的url
+      type: String,
+      required: true
+    },
+    paramData: { //查询参数
+      type: Object,
+      default: null
+    },
+    defaultValue: { //默认选中第一项
+      type: Boolean,
+      default: false
+    },
+    clearable: {
+      type: Boolean,
+      default: false
+    },
+    placeholder: {
+      type: String,
+      default: '请选择'
+    },
+    modelFilter: {
+      type: Boolean,
+      default: false
+    },
+  },
+  created() {
+    this.updateSelect();
+  },
+  mounted() {
+  },
+  watch: {
+    value: function () {
+      if (this.value == '' || this.value == null) {
+        if (this.defaultValue) {
+          if (this.selectList.length > 0) {
+            this.selectedValue = this.selectList[0].value
           }
-        });
+        } else {
+          this.selectedValue = this.value
+        }
+      } else {
+        this.selectedValue = this.value
+      }
+    },
+    paramData: function () {
+      //重新查询
+      this.updateSelect();
+    }
+    ,
+    dynamicValue: function () {
+      let obj = this.selectList.find(item => item.value === this.dynamicValue)
+      if (obj != undefined) {
+        this.selectedValue = obj.value
       }
     }
   },
-  data() {
-    return {
-      value: '',
-      options: [],
-      formData: {
-        pageIndex: 1,
-        pageSize: 20,
-      }
-    };
-  },
-  mounted() {
-    this.getList(this.formData);
-  },
   methods: {
-    loadmore() {
-      this.formData.pageIndex++;
-      this.getList(this.formData);
+    getVal() {
+      return this.selectedValue;
+    }
+    ,
+    change(data) {
+      let obj = this.selectList.find(item => item.value === data)
+      this.$emit("selectedValue", this.selectedValue);
+      this.$emit("input", this.selectedValue);
+      if (obj == undefined) {
+        this.$emit("selectedObj", obj);
+      } else {
+        this.$emit("selectedObj", {value: obj.value, label: obj.desc});
+      }
     },
-    getList(formData) {
-      // 这里是接口请求数据, 带分页条件
-      const _res = [1, 2, 3]; // 请求得到的数据
-      this.options = [...this.options, ..._res];
+    updateSelect2() {
+      this.selectedValue = "";
+      getBaseData(this.url, this.paramData).then(res => {
+        this.selectList = res.data;
+        if (this.defaultValue) {
+          if (this.selectList.length > 0) {
+            this.selectedValue = this.selectList[0].value
+          }
+        }
+        if (this.dynamicValue != null) {
+          let obj = this.selectList.find(item => item.value === this.dynamicValue)
+          if (obj != undefined) {
+            this.selectedValue = obj.value
+          }
+        }
+        this.$emit("input", this.selectedValue);
+      })
+    },
+    updateSelect() {
+      this.selectedValue = "";
+      getBaseData(this.url, this.paramData).then(res => {
+        let data = res.data;
+        this.allData = data ? data : [];
+        this.selectList = this.allData.slice(0, 100)
+        if (this.defaultValue) {
+          if (this.selectList.length > 0) {
+            this.selectedValue = this.selectList[0].value
+          }
+        }
+        if (this.dynamicValue != null) {
+          let obj = this.selectList.find(item => item.value === this.dynamicValue)
+          if (obj != undefined) {
+            this.selectedValue = obj.value
+          }
+        }
+        this.$emit("input", this.selectedValue);
+      })
+    },
+    filterOptions(query = '') {
+      // query是输入框中的检索条件
+      let arr = this.allData.filter(item => {
+        return item.desc.includes(query)
+      });
+      // 根据检索条件筛选出来的选项，只取前100条
+      if (arr.length > 100) {
+        arr = arr.slice(0, 100)
+      }
+      // 清空之前的选项
+      this.selectList.splice(0, this.selectList.length)
+      if (arr.length > 30) {
+        this.selectList.push(...arr)
+      } else {
+        this.selectList.push(...arr)
+      }
     }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 </style>

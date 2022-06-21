@@ -14,21 +14,21 @@
         <img src="../../assets/img/logo.png" style="width: 100px;height: 100px;"/>
       </div>
 
-      <h2 class="home-carouse-title">{{$t('Yan.carouseTitle') }}</h2>
+      <h2 class="home-carouse-title">{{ $t('Yan.carouseTitle') }}</h2>
       <p class="home-carouse-description"></p>
-      <p class="home-carouse-link">{{$t('Yan.h2') }}</p>
+      <p class="home-carouse-link">{{ $t('Yan.h2') }}</p>
     </div>
 
     <div class="home-content">
       <p>
-        {{$t('Yan.h3') }}
+        {{ $t('Yan.h3') }}
       </p>
       <p>
-        {{$t('Yan.h4') }}
+        {{ $t('Yan.h4') }}
       </p>
       <p style="margin-top: 20px">Species:6 species </p>
       <p>The number of tree node:>10000 </p>
-      <p>The number of lineage tree:29 </p>
+      <p>The number of lineage tree:{{ treeNum }} </p>
     </div>
 
   </div>
@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import {requestData} from "@/api/main/search";
+
 export default {
   name: "Home",
   data() {
@@ -53,7 +55,20 @@ export default {
         {
           backgroundImage: 'url(' + require('../../assets/img/4.jpg') + ')',
         }*/
-      ]
+      ],
+      treeNum: 0
+    }
+  },
+  mounted() {
+    this.requestDataAndRendering()
+  },
+  methods: {
+    requestDataAndRendering() { // 获取数的数量
+      requestData('/search', this.form).then(res => {
+        this.treeNum = res.data.length
+      }).catch(e => {
+        console.log(e)
+      })
     }
   }
 }

@@ -24,7 +24,6 @@
               url="/tree"
               :placeholder="$t('Yan.select')"
               :clearable="true"
-              :modelFilter="true"
           />
         </el-form-item>
 
@@ -66,6 +65,7 @@
           <el-select v-model="form.direction" :placeholder="$t('Yan.select')">
             <el-option :label="$t('Yan.horizontal')" :value=1></el-option>
             <el-option :label="$t('Yan.vertical')" :value=2></el-option>
+            <el-option :label="$t('Yan.radial')" :value=3></el-option>
             <!--            <el-option
                             v-for="item in directionOptions"
                             :key="item.value"
@@ -80,7 +80,7 @@
             v-show=" form.activeTab === '2' "
             prop="geneName1"
         >
-          <base-select
+          <lazy-base-select
               v-model="form.geneName1"
               :param-data="geneParam"
               url="/geneByTreeId"
@@ -94,7 +94,7 @@
             v-show=" form.activeTab === '2' "
             prop="geneName2"
         >
-          <base-select
+          <lazy-base-select
               v-model="form.geneName2"
               :param-data="geneParam"
               url="/geneByTreeId"
@@ -167,6 +167,23 @@
         {{ $t('Yan.openAll') }}
       </el-button>
 
+      <div
+          v-show="this.form.activeTab === '1'"
+          style="width: 80%;margin:40px auto 0px;display: flex;flex-direction: row; justify-content: space-between;align-items: baseline;"
+      >
+        <div v-show="this.cellTypeList.length > 0" style="font-size: 14px">Cell type of {{ this.form.treeId }}：</div>
+
+        <div
+            v-for="(item,index) in cellTypeList"
+            class="typeNotice"
+            :style="{color: item.color}"
+        >{{ item.cellType }}
+        </div>
+
+        <div>
+
+        </div>
+      </div>
 
       <div
           v-show="this.form.activeTab !== '3'"
@@ -174,6 +191,7 @@
           id="lineageChart"
           :style="{'width': '100%','height': this.chartContainerHeight ,'margin':'0 auto'}"
       ></div>
+
 
       <div v-show="this.form.activeTab === '3'"
            style="width: 100%;margin:0 auto;display: flex;flex-direction: row; justify-content: space-between;"
@@ -233,15 +251,54 @@
       </div>
     </el-card>
 
+    <el-card v-show="this.form.activeTab === '1' && this.cellTypeList.length > 0">
+      <h4>
+        Cell types in this lineage：
+      </h4>
+
+      <el-table
+          :data="cellTypeList"
+          :stripe="true"
+          :highlight-current-row="true"
+          :empty-text="$t('Yan.empty')"
+          border
+          style="width: 100%">
+
+        <el-table-column
+            :label="$t('Yan.index')"
+            type="index"
+            align="center"
+            min-width="100">
+        </el-table-column>
+
+        <el-table-column
+            prop="cellType"
+            :label="$t('Yan.cellType')"
+            :show-overflow-tooltip="true"
+            align="center"
+            min-width="200">
+        </el-table-column>
+
+        <!--        <el-table-column
+                    prop="color"
+                    :label="$t('Yan.color')"
+                    :show-overflow-tooltip="true"
+                    align="center"
+                    min-width="200">
+                </el-table-column>-->
+
+      </el-table>
+    </el-card>
+
     <el-dialog
-        title="当前节点下级"
+        title="SubTree"
         :visible.sync="dialogVisible"
         width="80%">
 
       <Children :childForm="childForm"/>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">关 闭</el-button>
+        <el-button @click="dialogVisible = false">Close</el-button>
       </span>
     </el-dialog>
 
@@ -252,6 +309,7 @@
 <script>
 
 import BaseSelect from "@/components/baseDataSelect/BaseSelect"
+import LazyBaseSelect from "@/components/baseDataSelect/LazyBaseSelect"
 import Children from "./Children"
 import {requestData} from "@/api/main/upload"
 import echarts from 'echarts'
@@ -260,6 +318,7 @@ export default {
   name: "Upload",
   components: {
     BaseSelect,
+    LazyBaseSelect,
     Children
   },
   data() {
@@ -289,18 +348,26 @@ export default {
       childForm: {},
       uploadUrl: `${process.env.VUE_APP_BASE_API}api/lineage/chart/upload`,
       fileList: [],
+      cellTypeList: [],
       x: new Map()
     }
   },
   watch: {
     'form.treeId'(newVal, oldVal) {
-      this.geneParam = {treeId: newVal}
+      if (this.form.activeTab === '2') {
+        this.geneParam = {treeId: newVal}
+      }
     }
   },
   mounted() {
     if (this.$route.query.treeId) {
       this.form.treeId = this.$route.query.treeId
       this.requestDataAndRendering()
+
+      // 细胞类型列表
+      if (this.form.activeTab === '1') {
+        this.getCellTypeList()
+      }
     }
   },
   methods: {
@@ -326,6 +393,13 @@ export default {
           return false;
         }
       }
+
+      // 细胞类型列表
+      if (this.form.activeTab === '1') {
+        this.getCellTypeList()
+      }
+
+
       this.requestDataAndRendering()
     },
     resetForm() {
@@ -341,7 +415,7 @@ export default {
       }
 
       requestData('/getSimilarity', this.form).then(res => {
-        let {similarity,nodeNum,inaccurate} = res.data
+        let {similarity, nodeNum, inaccurate} = res.data
         let content;
         if (value === '1') {
           content = this.$t('Yan.correlationOriginal') + ": " + similarity.toString().substr(0, 9)
@@ -354,9 +428,9 @@ export default {
         let z = similarity * Math.sqrt((nodeNum - 3) / 1.06)
         if (z > 1.645 && z < 1.96) {
           content += '*'
-        }else if (z > 1.96 && z < 2.5760) {
+        } else if (z > 1.96 && z < 2.5760) {
           content += '**'
-        }else if (z > 2.576) {
+        } else if (z > 2.576) {
           content += '***'
         }
         debugger
@@ -369,7 +443,7 @@ export default {
 
         this.$alert(content, this.$t('Yan.correlation'), {
           confirmButtonText: this.$t('Yan.confirm'),
-          dangerouslyUseHTMLString:true
+          dangerouslyUseHTMLString: true
         })
       }).catch(e => {
         console.log(e)
@@ -436,6 +510,13 @@ export default {
         })
       }
     },
+    getCellTypeList() {
+      requestData('/getCellTypeList', this.form).then(res => {
+        this.cellTypeList = res.data
+      }).catch(e => {
+        console.log(e)
+      })
+    },
     saveImg(type) {
       const opt = {
         // 导出的格式，可选 png, jpeg
@@ -457,15 +538,31 @@ export default {
     },
     switchDepth() {
       this.openAll = !this.openAll
-
+      let depth = this.openAll ? -1 : 3
       let option = {
         series: [
           {
-            initialTreeDepth: this.openAll ? -1 : 3,
+            initialTreeDepth: depth,
           }
         ]
       }
-      this.chartContainerHeight = this.openAll ? '10000px' : '800px'
+
+      if (this.form.activeTab === '2') {
+        option = {
+          series: [
+            {
+              initialTreeDepth: depth,
+            },
+            {
+              initialTreeDepth: depth,
+            }
+          ]
+        }
+      }
+
+      if (this.form.direction !== 3 || this.form.activeTab !== '1') {
+        this.chartContainerHeight = this.openAll ? '10000px' : '800px'
+      }
       let resize = {height: this.chartContainerHeight}
       if (this.form.activeTab === '3') {
         this.compareTreeLeft.setOption(option)
@@ -525,8 +622,11 @@ export default {
     },
     getChartOption(data, direction, vOrient) {
       let orient = 'horizontal';
+      let layout = 'orthogonal';
       if (direction === 2) {
         orient = 'vertical';
+      } else if (direction === 3) {
+        layout = 'radial'
       } else {
         if (vOrient === 1) {
           orient = 'LR'
@@ -551,6 +651,7 @@ export default {
             right: '20%',
 
             symbolSize: 7,
+            layout: layout,// orthogonal-正交布局  radial-径向布局
             orient: orient,//方向
 
             // edgeShape: 'polyline',
