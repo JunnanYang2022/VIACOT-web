@@ -29,7 +29,7 @@ export const Yan = {
     horizontal: 'horizontal',
     vertical: 'vertical',
     radial: 'radial',
-    empty: 'Data Empty',
+    empty: 'No Data',
     lineageTree: 'LineageTree',
     direction: 'Direction',
     gene: 'Gene',
@@ -45,6 +45,7 @@ export const Yan = {
     correlationTip: 'The expression variation of one or both genes are too small. Correlation might not be informative.',
     cellType: 'Cell Type',
     color: 'Color',
+    subTreeTip: 'The node has no child nodes , cannot generate a subtree!',
 
     download: 'Download',
     contactUs: 'About Us',

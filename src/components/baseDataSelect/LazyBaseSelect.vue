@@ -5,6 +5,7 @@
       v-model="selectedValue"
       @change="change"
       :placeholder="placeholder"
+      :no-data-text="noDataText"
       :filter-method="filterOptions"
   >
     <el-option
@@ -56,6 +57,10 @@ export default {
     placeholder: {
       type: String,
       default: '请选择'
+    },
+    noDataText: {
+      type: String,
+      default: '无数据'
     },
     modelFilter: {
       type: Boolean,

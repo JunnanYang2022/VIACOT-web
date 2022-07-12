@@ -45,6 +45,7 @@ export const Yan = {
     correlationTip: '基因的表达变异太少。相关性可能无法提供准确信息。',
     cellType: '细胞类型',
     color: '颜色',
+    subTreeTip: '该节点没有子节点，不可生成子树!',
 
     download: '下载',
     contactUs: '联系我们',

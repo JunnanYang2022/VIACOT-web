@@ -85,6 +85,7 @@
               :param-data="geneParam"
               url="/geneByTreeId"
               :placeholder="$t('Yan.select')"
+              :noDataText="$t('Yan.empty')"
               :clearable="true"
           />
         </el-form-item>
@@ -99,6 +100,7 @@
               :param-data="geneParam"
               url="/geneByTreeId"
               :placeholder="$t('Yan.select')"
+              :noDataText="$t('Yan.empty')"
               :clearable="true"
           />
         </el-form-item>
@@ -595,11 +597,10 @@ export default {
       } = this.form
 
       this.lineageChart.on('contextmenu', function (params) {
-        debugger
-
         if (!params.data.children) {
+          let message = _this.$t('Yan.subTreeTip')
           _this.$message({
-            message: '该节点没有子节点，不可生成子树',
+            message: message,
             type: 'warning'
           });
           return false

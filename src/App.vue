@@ -83,7 +83,7 @@ export default {
       router: true,
       defaultActive: "/",
       isShow: true,
-      lang: 'zh-CN'
+      lang: 'en-US'
     };
   },
   watch: {
