@@ -20,7 +20,7 @@ export const Yan = {
     speciesPla: 'Please enter the species name in English or Latin',
     select: 'Please input or select',
 
-    upload: 'Visualization',
+    visualization: 'Visualization',
     t1: 'The single tree mode',
     t2: 'The expression comparison mode',
     t3: 'The tree comparison mode ',
@@ -47,7 +47,8 @@ export const Yan = {
     color: 'Color',
     subTreeTip: 'The node has no child nodes , cannot generate a subtree!',
 
-    download: 'Download',
+    upload: 'Upload',
+    uploadFileTip: 'just support newick!',
     contactUs: 'About Us',
 
     btnSearch: 'search',

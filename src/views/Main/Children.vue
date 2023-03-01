@@ -22,7 +22,7 @@
 
 <script>
 
-import {requestData} from "@/api/main/upload"
+import {requestData} from "@/api/main/visualization"
 import echarts from 'echarts'
 
 export default {

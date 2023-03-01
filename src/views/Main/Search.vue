@@ -144,7 +144,7 @@ export default {
     },
     toDetail(data) {
       this.$router.push({
-        path: '/upload',
+        path: '/visualization',
         query: {
           treeId: data.treeId
         }

@@ -16,14 +16,14 @@ let lineageRouter = new Router({
             component: () => import('@/views/Main/Search'),
         },
         {
+            path: '/visualization',
+            name: 'Visualization',
+            component: () => import('@/views/Main/Visualization'),
+        },
+        {
             path: '/upload',
             name: 'upload',
             component: () => import('@/views/Main/Upload'),
-        },
-        {
-            path: '/download',
-            name: 'download',
-            component: () => import('@/views/Main/Download'),
         }
     ]
 })

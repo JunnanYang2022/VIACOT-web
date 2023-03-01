@@ -22,8 +22,8 @@
         >
           <el-menu-item index="/">{{$t('Yan.home')}}</el-menu-item>
           <el-menu-item index="/search">{{$t('Yan.search')}}</el-menu-item>
+          <el-menu-item index="/visualization">{{$t('Yan.visualization')}}</el-menu-item>
           <el-menu-item index="/upload">{{$t('Yan.upload')}}</el-menu-item>
-          <el-menu-item index="/download">{{$t('Yan.download')}}</el-menu-item>
           <el-menu-item @click="toContactUs()">{{$t('Yan.contactUs')}}</el-menu-item>
         </el-menu>
       </el-header>

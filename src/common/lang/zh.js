@@ -20,7 +20,7 @@ export const Yan = {
     speciesPla: '请输入物种名称或拉丁文名',
     select: '请选择',
 
-    upload: '比对与分析',
+    visualization: '比对与分析',
     t1: '单棵谱系树',
     t2: '谱系树基因表达对比',
     t3: '谱系树对比',
@@ -47,7 +47,8 @@ export const Yan = {
     color: '颜色',
     subTreeTip: '该节点没有子节点，不可生成子树!',
 
-    download: '下载',
+    upload: '上传文件',
+    uploadFileTip: '只能上传newick文件',
     contactUs: '联系我们',
 
     btnSearch: '查询',
