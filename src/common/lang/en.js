@@ -55,6 +55,7 @@ export const Yan = {
     btnReset: 'reset',
     index: 'Index',
     visualDisplay: 'Visual display',
+    downloadNewick: 'Download Newick File',
     display: 'display',
     downloadIng: 'Download as image',
     openAll: 'Expand all',

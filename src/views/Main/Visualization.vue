@@ -365,6 +365,7 @@ export default {
     }
   },
   mounted() {
+    this.lineageChart = echarts.init(this.$refs['lineageChart'])
     if (this.$route.query.treeId) {
       this.form.treeId = this.$route.query.treeId
       this.requestDataAndRendering()
@@ -466,7 +467,7 @@ export default {
     },
     requestDataAndRendering() { // 请求后台数据并渲染表格
       if (this.form.activeTab === '1') {
-        this.lineageChart = echarts.init(this.$refs['lineageChart'])
+
         this.lineageChart.showLoading();
         this.onDbClick()
         debugger
@@ -479,7 +480,7 @@ export default {
           this.lineageChart.hideLoading();
         })
       } else if (this.form.activeTab === '2') {
-        this.lineageChart = echarts.init(this.$refs['lineageChart'])
+
         this.lineageChart.showLoading();
         this.onDbClick()
         requestData('/geneCompareTreeData', this.form).then(res => {

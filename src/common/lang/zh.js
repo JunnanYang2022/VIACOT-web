@@ -55,6 +55,7 @@ export const Yan = {
     btnReset: '重置',
     index: '序号',
     visualDisplay: '查看',
+    downloadNewick: '下载Newick文件',
     display: '生成',
     downloadIng: '下载为图片',
     openAll: '一键展开',

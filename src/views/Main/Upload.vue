@@ -1,24 +1,37 @@
 <template>
   <div class="app-container">
     <el-card>
-      <el-upload
-          ref="upload"
-          class="uploadNewick"
-          :action="uploadUrl"
-          :multiple="false"
-          :on-progress="handleProcess"
-          :on-remove="handleRemove"
-          :on-success="handleSuccess"
-          :before-remove="beforeRemove"
-          :limit="1"
-          :show-file-list="false"
-          :on-exceed="handleExceed"
-          :file-list="fileList">
-        <el-button size="small" type="primary">{{$t('Yan.upload')}}</el-button>
-        <div slot="tip" class="el-upload__tip">{{$t('Yan.uploadFileTip')}}</div>
-        <!--        <i class="el-icon-upload"></i>-->
-        <!--        <div class="el-upload__text">将newick格式txt文件拖到此处，或<em>点击上传</em></div>-->
-      </el-upload>
+
+      <el-row type="flex" class="row-bg" justify="space-between">
+        <el-col :span="6">
+          <el-upload
+              ref="upload"
+              class="uploadNewick"
+              :action="uploadUrl"
+              :multiple="false"
+              :on-progress="handleProcess"
+              :on-remove="handleRemove"
+              :on-success="handleSuccess"
+              :before-remove="beforeRemove"
+              :limit="1"
+              :show-file-list="false"
+              :on-exceed="handleExceed"
+              :file-list="fileList">
+            <el-button size="small" type="primary">{{ $t('Yan.upload') }}</el-button>
+            <div slot="tip" class="el-upload__tip">{{ $t('Yan.uploadFileTip') }}</div>
+            <!--        <i class="el-icon-upload"></i>-->
+            <!--        <div class="el-upload__text">将newick格式txt文件拖到此处，或<em>点击上传</em></div>-->
+          </el-upload>
+        </el-col>
+        <el-col :span="6">
+          <el-button
+              size="small"
+              icon="el-icon-download"
+              @click="saveImg"
+          >{{ $t('Yan.downloadIng') }}
+          </el-button>
+        </el-col>
+      </el-row>
     </el-card>
 
     <el-card>
@@ -59,6 +72,29 @@ export default {
     },
     beforeRemove(file, fileList) {
     },
+    saveImg() {
+      const opt = {
+        // 导出的格式，可选 png, jpeg
+        type: 'png',
+        // 导出的图片分辨率比例，默认为 1。
+        pixelRatio: 2,
+        // 导出的图片背景色，默认使用 option 里的 backgroundColor
+        backgroundColor: '#ffffff'
+      }
+
+      const img = new Image();
+      img.src = this.lineageChart.getDataURL(opt)
+      this.downloadImg(img.src)
+    },
+    downloadImg(url, name) {
+      const a = document.createElement('a');
+      const event = new MouseEvent('click');
+
+      a.download = name || 'tree'
+      a.href = url
+
+      a.dispatchEvent(event)
+    },
     handleSuccess(response, file, fileList) {
       debugger
       if (response.code === 200) {
@@ -69,7 +105,7 @@ export default {
         });
         this.lineageChart.setOption(this.getChartOption(response.data, 'horizontal', 1), true)
         this.lineageChart.hideLoading();
-      }else {
+      } else {
         this.error("upload failed!");
       }
       this.$refs.upload.clearFiles();

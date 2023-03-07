@@ -27,8 +27,8 @@
 
 
         <el-form-item :label-width="'50px'" class="searchItem">
-          <el-button type="primary" @click="submitForm()">{{$t('Yan.btnSearch') }}</el-button>
-          <el-button type="default" @click="resetForm()">{{$t('Yan.btnReset') }}</el-button>
+          <el-button type="primary" @click="submitForm()">{{ $t('Yan.btnSearch') }}</el-button>
+          <el-button type="default" @click="resetForm()">{{ $t('Yan.btnReset') }}</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -49,13 +49,13 @@
             min-width="50">
         </el-table-column>
 
-<!--        <el-table-column
-            prop="treeId"
-            :label="$t('Yan.treeId')"
-            :show-overflow-tooltip="true"
-            align="center"
-            min-width="200">
-        </el-table-column>-->
+        <!--        <el-table-column
+                    prop="treeId"
+                    :label="$t('Yan.treeId')"
+                    :show-overflow-tooltip="true"
+                    align="center"
+                    min-width="200">
+                </el-table-column>-->
 
         <el-table-column
             prop="treeName"
@@ -101,9 +101,11 @@
             :label="$t('Yan.operation')"
             fixed="right"
             align="center"
-            min-width="80">
+            min-width="200">
           <template slot-scope="scope">
-            <el-button @click="toDetail(scope.row)" type="text" size="small">{{$t('Yan.visualDisplay')}}</el-button>
+            <el-button @click="toDetail(scope.row)" type="text" size="small">{{ $t('Yan.visualDisplay') }}</el-button>
+            <el-button @click="downloadNewick(scope.row)" type="text" size="small">{{ $t('Yan.downloadNewick') }}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -149,6 +151,9 @@ export default {
           treeId: data.treeId
         }
       })
+    },
+    downloadNewick(data) {
+      window.open(`${process.env.VUE_APP_BASE_API}api/lineage/chart/downloadNewick?treeId=${data.treeId}`)
     },
     requestDataAndRendering() { // 请求后台数据并渲染表格
       this.loading = true
