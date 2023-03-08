@@ -140,8 +140,27 @@
       </el-form>
     </el-card>
 
-
     <el-card style="margin-top: 10px">
+      <el-row
+          v-show="showTitle"
+      >
+        <div :style="{'width': '100%','margin':'0 auto', 'text-align': 'center'}">
+          <div
+              v-show="form.activeTab === '1'"
+          >
+            ○ Tree Name: {{ this.currentTreeName }}
+          </div>
+
+          <div
+              v-show="form.activeTab === '2'"
+          >
+            ○ Tree Name: {{ this.currentTreeName }} |
+            ○ Gene 1 Name: {{ this.form.geneName1 }} |
+            ○ Gene 2 Name: {{ this.form.geneName2 }}
+          </div>
+        </div>
+      </el-row>
+
       <el-button
           size="small"
           icon="el-icon-download"
@@ -160,7 +179,9 @@
         {{ $t('Yan.back') }}
       </el-button>
 
-      <el-tooltip class="item" effect="dark" content="Expanding all nodes for large trees will likely cause your browser to freeze for a while." placement="right-start">
+      <el-tooltip class="item" effect="dark"
+                  content="Expanding all nodes for large trees will likely cause your browser to freeze for a while."
+                  placement="right-start">
         <el-button
             v-show="!this.openAll"
             size="small"
@@ -318,6 +339,7 @@ import LazyBaseSelect from "@/components/baseDataSelect/LazyBaseSelect"
 import Children from "./Children"
 import {requestData} from "@/api/main/visualization"
 import echarts from 'echarts'
+import {getBaseData} from "@/api/baseData/baseDataInit";
 
 export default {
   name: "Visualization",
@@ -354,7 +376,9 @@ export default {
       uploadUrl: `${process.env.VUE_APP_BASE_API}api/lineage/chart/uploadNewick`,
       fileList: [],
       cellTypeList: [],
-      x: new Map()
+      x: new Map(),
+      showTitle: false,
+      currentTreeName: ''
     }
   },
   watch: {
@@ -362,6 +386,8 @@ export default {
       if (this.form.activeTab === '2') {
         this.geneParam = {treeId: newVal}
       }
+
+      this.getTreeName()
     }
   },
   mounted() {
@@ -464,6 +490,12 @@ export default {
       this.openAll = false
       this.chartContainerHeight = '800px'
       console.log(tab, event);
+      this.showTitle = false
+    },
+    getTreeName() {
+      getBaseData('treeById', {treeId: this.form.treeId}).then(res => {
+        this.currentTreeName = res.data.treeName
+      })
     },
     requestDataAndRendering() { // 请求后台数据并渲染表格
       if (this.form.activeTab === '1') {
@@ -515,6 +547,8 @@ export default {
           this.compareTreeRight.hideLoading();
         })
       }
+
+      this.showTitle = true
     },
     getCellTypeList() {
       requestData('/getCellTypeList', this.form).then(res => {
